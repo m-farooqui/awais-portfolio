@@ -15,7 +15,7 @@ const projects = [
     summary: 'A community hub for meetings, announcements, jobs, resources, and hands-on SQL and Python practice.',
     overview: 'A community website designed to make SQL Server user-group information and practical learning resources accessible in one place.',
     role: 'Designed and developed the website and learning features.',
-    stack: ['React-free static frontend', 'Python', 'FastAPI', 'Nginx', 'Docker', 'SQLite'],
+    stack: ['HTML / CSS / JavaScript', 'Python', 'FastAPI', 'Nginx', 'Docker', 'SQLite'],
     features: ['Meeting and event information', 'Announcements and community resources', 'SQL and Python learning exercises', 'Domain-based datasets for practice'],
     architecture: ['Browser / Nginx', 'FastAPI endpoints', 'Practice datasets and exercises'],
     challenges: 'Coordinating the frontend and API endpoints, and ensuring learning datasets load correctly.',
@@ -135,12 +135,46 @@ function Home() {
   </main>;
 }
 
+const sqlScreenshots = [
+  { file: 'homepage.png', label: 'Community homepage', description: 'Meetings, announcements, and resources' },
+  { file: 'learning-lab.png', label: 'Learning Lab', description: 'SQL and Python practice workspace' },
+  { file: 'datasets.png', label: 'Practice datasets', description: 'Domain-based datasets for hands-on learning' },
+];
+
+function ScreenshotCard({ item }) {
+  const [failed, setFailed] = useState(false);
+  const path = `/images/projects/sql-user-group/${item.file}`;
+  return <figure className="screenshot-card">
+    {failed ? <div className="screenshot-placeholder"><span aria-hidden="true">▧</span><strong>{item.label}</strong><small>Add {item.file} to the SQL project images folder</small></div>
+      : <img src={path} alt={item.label} loading="lazy" onError={() => setFailed(true)} />}
+    <figcaption><strong>{item.label}</strong><span>{item.description}</span></figcaption>
+  </figure>;
+}
+
+function SqlArchitecture() {
+  return <div className="sql-architecture" role="group" aria-label="Conceptual SQL Server User Group website architecture">
+    <div className="architecture-layer"><span className="layer-kicker">VISITOR</span><strong>Web browser</strong><small>Meetings · Learning Lab · Datasets</small></div>
+    <div className="architecture-arrow" aria-hidden="true">↓ HTTP requests</div>
+    <div className="architecture-layer"><span className="layer-kicker">WEB SERVER</span><strong>Nginx</strong><small>Static HTML, CSS and JavaScript</small></div>
+    <div className="architecture-arrow" aria-hidden="true">↓ API requests</div>
+    <div className="architecture-layer"><span className="layer-kicker">APPLICATION</span><strong>FastAPI · Python</strong><small>Meetings · Events · Practice endpoints</small></div>
+    <div className="architecture-arrow" aria-hidden="true">↓ Read / execute practice queries</div>
+    <div className="architecture-layer"><span className="layer-kicker">DATA & EXERCISES</span><strong>SQLite datasets</strong><small>Domain data · SQL exercises</small></div>
+    <p className="architecture-caption">Conceptual application flow. Nginx and FastAPI run as Docker services in the local setup.</p>
+  </div>;
+}
+
 function ProjectDetail() {
   const { slug } = useParams();
   const project = projects.find(p => p.slug === slug);
   if (!project) return <main className="section container"><h1>Project not found</h1><Link to="/projects" className="text-link">← Back to projects</Link></main>;
+  const isSql = project.slug === 'sql-user-group';
   return <main><section className="detail-hero"><div className="container"><Link to="/projects" className="back-link">← All projects</Link><p className="eyebrow">{project.category}</p><h1>{project.title}</h1><p className="detail-intro">{project.summary}</p><div className="tags">{project.stack.map(s => <span key={s}>{s}</span>)}</div><div className="actions">{project.repo && <a className="button primary" href={project.repo} target="_blank" rel="noopener noreferrer">View source on GitHub ↗</a>}</div></div></section>
-    <section className="section"><div className="container detail-grid"><div className="detail-main"><h2>Project overview</h2><p>{project.overview}</p><h2>My contribution</h2><p>{project.role}</p><h2>Key features</h2><ul>{project.features.map(x => <li key={x}>{x}</li>)}</ul><h2>Architecture</h2><div className="architecture">{project.architecture.map((x, i) => <div className="architecture-step" key={x}><span>{x}</span>{i < project.architecture.length - 1 && <b aria-hidden="true">→</b>}</div>)}</div><p className="note">Conceptual overview — not a complete infrastructure diagram.</p><h2>Challenges</h2><p>{project.challenges}</p><h2>Lessons learned</h2><p>{project.lessons}</p><div className="next-project"><Link className="button secondary" to="/projects">← Explore more projects</Link></div></div><aside className="detail-side"><div className="panel"><h3>Project at a glance</h3><p><strong>Area</strong><br/>{project.category}</p><p><strong>Tools</strong><br/>{project.stack.join(', ')}</p><p><strong>Code</strong><br/>{project.repo ? <a href={project.repo} target="_blank" rel="noopener noreferrer" className="text-link">GitHub repository ↗</a> : 'Repository link coming soon'}</p></div><div className="panel"><h3>Screenshots</h3><p>Application screenshots and verified architecture visuals will be added here.</p></div></aside></div></section>
+    <section className="section"><div className="container detail-grid"><div className="detail-main"><h2>Project overview</h2><p>{project.overview}</p><h2>My contribution</h2><p>{project.role}</p><h2>Key features</h2><ul>{project.features.map(x => <li key={x}>{x}</li>)}</ul>
+    {isSql && <><h2>Application screenshots</h2><p>Actual screenshots will appear automatically when you add the named image files to the project folder.</p><div className="screenshot-grid">{sqlScreenshots.map(item => <ScreenshotCard key={item.file} item={item} />)}</div></>}
+    <h2>Architecture</h2>{isSql ? <SqlArchitecture /> : <><div className="architecture">{project.architecture.map((x, i) => <div className="architecture-step" key={x}><span>{x}</span>{i < project.architecture.length - 1 && <b aria-hidden="true">→</b>}</div>)}</div><p className="note">Conceptual overview — not a complete infrastructure diagram.</p></>}
+    {isSql && <><h2>How the application works</h2><p>The browser loads the community website through Nginx. Interactive features call Python FastAPI endpoints. The Learning Lab uses domain-based SQLite datasets for SQL practice, while other endpoints serve meeting and event information.</p><h2>Implementation highlights</h2><ul><li>Built community sections for meetings, announcements, resources, and jobs.</li><li>Connected the frontend to FastAPI endpoints.</li><li>Added SQL practice with domain datasets and a Python practice area.</li><li>Used Docker Compose to run the frontend and backend services.</li></ul></>}
+    <h2>Challenges</h2><p>{project.challenges}</p><h2>Lessons learned</h2><p>{project.lessons}</p><div className="next-project"><Link className="button secondary" to="/projects">← Explore more projects</Link></div></div><aside className="detail-side"><div className="panel"><h3>Project at a glance</h3><p><strong>Area</strong><br/>{project.category}</p><p><strong>Tools</strong><br/>{project.stack.join(', ')}</p><p><strong>Code</strong><br/>{project.repo ? <a href={project.repo} target="_blank" rel="noopener noreferrer" className="text-link">GitHub repository ↗</a> : 'Repository link coming soon'}</p></div><div className="panel"><h3>Visuals</h3><p>{isSql ? 'Screenshot cards show real images when you add them; missing files display helpful placeholders.' : 'Verified application screenshots can be added in a future update.'}</p></div></aside></div></section>
   </main>;
 }
 
