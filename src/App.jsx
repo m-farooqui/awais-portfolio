@@ -137,8 +137,8 @@ function Home() {
 
 const sqlScreenshots = [
   { file: 'homepage.png', label: 'Community homepage', description: 'Meetings, announcements, and resources' },
-  { file: 'learning-lab.png', label: 'Learning Lab', description: 'SQL and Python practice workspace' },
-  { file: 'datasets.png', label: 'Practice datasets', description: 'Domain-based datasets for hands-on learning' },
+  { file: 'announcements.png', label: 'Announcements', description: 'Speaker requests, community news, and events' },
+  { file: 'career-center.png', label: 'Career Center', description: 'Job platforms, live job search, and resume resources' },
 ];
 
 function ScreenshotCard({ item }) {
